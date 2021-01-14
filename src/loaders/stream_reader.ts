@@ -3,16 +3,30 @@ import Stream from './stream';
 
 export default class StreamReader implements Stream {
     protected fileDescriptor: number;
+    protected _position: number;
+
+    public get position(): number {
+        return this._position;
+    }
 
     public constructor(file_descriptor: number) {
         this.fileDescriptor = file_descriptor;
+        this._position = 0;
     }
 
     public async read(buffer: Buffer, limit: number): Promise<number> {
         return new Promise<number>((resolve, reject) => {
 
-            read(this.fileDescriptor, buffer, 0, limit, null, (err, bytes_read, buffer) => {
+            read(this.fileDescriptor, buffer, 0, limit, this.position, (err, bytes_read, buffer) => {
+                this._position += bytes_read;
+
                 if(err !== null) return reject(err);
+
+                if(bytes_read == 0) {
+                    let e = { stream_exhausted: true };
+                    reject(e);
+                    throw e;
+                }
 
                 return resolve(bytes_read);
             });
@@ -22,7 +36,9 @@ export default class StreamReader implements Stream {
     public async readByte(): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             let buffer = Buffer.alloc(1);
-            read(this.fileDescriptor, buffer, 0, 1, null, (err, bytes_read, buffer) => {
+            read(this.fileDescriptor, buffer, 0, 1, this.position, (err, bytes_read, buffer) => {
+                this._position += bytes_read;
+
                 if(err !== null) return reject(err);
                 if(bytes_read != 1) return reject();
 

@@ -1,4 +1,8 @@
 export default interface Stream {
+    /**
+     * Holds a current position inside stream
+     */
+    position: number;
 
     /**
      * Reads a number of bytes into buffer
