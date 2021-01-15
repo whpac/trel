@@ -16,4 +16,9 @@ export default interface Stream {
      * Reads a byte from stream and returns it
      */
     readByte(): Promise<number>;
+
+    /**
+     * Reads a line of text from file
+     */
+    readLine(): Promise<string>;
 }

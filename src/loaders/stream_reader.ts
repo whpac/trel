@@ -49,4 +49,26 @@ export default class StreamReader implements Stream {
         });
     }
 
+    public async readLine(): Promise<string> {
+        let b;
+        let buffer = Buffer.alloc(16);
+        let current_pos = 0;
+        do {
+            b = await this.readByte();
+            if(b == 13) continue;   // '\r' = 13
+
+            if(current_pos >= buffer.length) {
+                let new_buffer = Buffer.alloc(buffer.length * 2);
+                buffer.copy(new_buffer, 0, 0, buffer.length);
+                buffer = new_buffer;
+            }
+            buffer[current_pos] = b;
+            current_pos++;
+        } while(b != 10);   // '\n' = 10
+
+        // The last char is LF, so strip it
+        current_pos--;
+
+        return buffer.toString('utf-8', 0, current_pos);
+    }
 }
