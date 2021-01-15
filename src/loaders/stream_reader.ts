@@ -17,15 +17,14 @@ export default class StreamReader implements Stream {
     public async read(buffer: Buffer, limit: number): Promise<number> {
         return new Promise<number>((resolve, reject) => {
 
-            read(this.fileDescriptor, buffer, 0, limit, this.position, (err, bytes_read, buffer) => {
+            read(this.fileDescriptor, buffer, 0, limit, null, (err, bytes_read, buffer) => {
                 this._position += bytes_read;
 
                 if(err !== null) return reject(err);
 
                 if(bytes_read == 0) {
                     let e = { stream_exhausted: true };
-                    reject(e);
-                    throw e;
+                    return reject(e);
                 }
 
                 return resolve(bytes_read);
@@ -36,11 +35,14 @@ export default class StreamReader implements Stream {
     public async readByte(): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             let buffer = Buffer.alloc(1);
-            read(this.fileDescriptor, buffer, 0, 1, this.position, (err, bytes_read, buffer) => {
+            read(this.fileDescriptor, buffer, 0, 1, null, (err, bytes_read, buffer) => {
                 this._position += bytes_read;
 
                 if(err !== null) return reject(err);
-                if(bytes_read != 1) return reject();
+                if(bytes_read != 1) {
+                    let e = { stream_exhausted: true };
+                    return reject(e);
+                }
 
                 return resolve(buffer[0]);
             });
