@@ -12,8 +12,10 @@ export class VarInt {
             if(b < 0) {
                 throw new Error("The stream has ended unexpectedly. Attempted to read a varint.");
             }
-            bytes.push(b & 0x7f);
-        } while(b > 0x7f);
+            bytes.push(b & 127);
+        } while(b > 127);
+
+        bytes = bytes.reverse();
 
         for(let part of bytes) {
             output *= BigInt(128);
