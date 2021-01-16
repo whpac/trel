@@ -1,3 +1,4 @@
+import ProgressMonitor from '../../diagnostics/progress_monitor';
 import Stream from '../../loaders/stream';
 
 /**
@@ -5,19 +6,20 @@ import Stream from '../../loaders/stream';
  */
 export default abstract class MemoryEfficientCsvParser<T> {
 
-    public async parse(s: Stream, skip_header: boolean = false) {
+    public async parse(s: Stream, skip_header: boolean = false, progress_monitor?: ProgressMonitor) {
         let line: string;
         let processed_fields: T[] = [];
         let line_number = 0;
 
         try {
-            if(skip_header) await s.readLine();
+            if(skip_header) s.readLine();
 
             while(true) {
-                line = await s.readLine();
+                line = s.readLine();
                 if(line == '') continue;
 
-                console.log(`Read line #${line_number++}`);
+                if(progress_monitor !== undefined)
+                    progress_monitor.value = ++line_number;
 
                 var fields = this.parseLine(line);
                 processed_fields.push(this.processFields(fields));
