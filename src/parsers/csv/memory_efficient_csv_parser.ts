@@ -4,12 +4,13 @@ import Stream from '../../loaders/stream';
 /**
  * This class enables user to select all the needed data at the very moment of reading it.
  */
-export default abstract class MemoryEfficientCsvParser<T> {
+export default abstract class MemoryEfficientCsvParser<TRow, TCont = TRow[]> {
 
     public async parse(s: Stream, skip_header: boolean = false, progress_monitor?: ProgressMonitor) {
         let line: string;
-        let processed_fields: T[] = [];
         let line_number = 0;
+
+        let processed_fields = this.initializeContainer();
 
         try {
             if(skip_header) s.readLine();
@@ -22,7 +23,7 @@ export default abstract class MemoryEfficientCsvParser<T> {
                     progress_monitor.value = ++line_number;
 
                 var fields = this.parseLine(line);
-                processed_fields.push(this.processFields(fields));
+                this.saveRowToContainer(processed_fields, this.processFields(fields));
             }
         } catch(e) {
             // Exception on EOF
@@ -31,7 +32,9 @@ export default abstract class MemoryEfficientCsvParser<T> {
         return processed_fields;
     }
 
-    protected abstract processFields(fields: string[]): T;
+    protected abstract initializeContainer(): TCont;
+    protected abstract processFields(fields: string[]): TRow;
+    protected abstract saveRowToContainer(container: TCont, row: TRow): void;
 
     protected parseLine(line: string): string[] {
         let fields: string[] = [];
