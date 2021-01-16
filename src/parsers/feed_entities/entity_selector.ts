@@ -19,8 +19,8 @@ export default class EntitySelector extends BaseMessage {
         return (field_number == 4);
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint): void {
-        if(typeof bytes === 'number' && field_number == 3) this.routeType = bytes;
+    public setField(field_number: number, bytes: Buffer | bigint): void {
+        if(typeof bytes === 'bigint' && field_number == 3) this.routeType = Number(bytes);
 
         if(bytes instanceof Buffer) {
             switch(field_number) {

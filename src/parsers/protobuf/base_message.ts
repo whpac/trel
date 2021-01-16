@@ -3,7 +3,7 @@ import { Message } from './message';
 export default abstract class BaseMessage implements Message {
     public abstract getEmbeddedMessage(field_number: number): Message;
     public abstract isEmbeddedMessage(field_number: number): boolean;
-    public abstract setField(field_number: number, bytes: Buffer | number | bigint): void;
+    public abstract setField(field_number: number, bytes: Buffer | bigint): void;
 
     protected ToFixed32(bytes: Buffer): number {
         if(bytes.length != 4) throw new Error("fixed32 should consist of exactly 4 bytes.");

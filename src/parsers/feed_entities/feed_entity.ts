@@ -25,9 +25,9 @@ export default class FeedEntity extends BaseMessage {
         return (field_number >= 3 && field_number <= 5);
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint): void {
-        if(typeof bytes === 'number' || typeof bytes === 'bigint') {
-            if(field_number == 2) this.isDeleted = (bytes != 0);
+    public setField(field_number: number, bytes: Buffer | bigint): void {
+        if(typeof bytes === 'bigint') {
+            if(field_number == 2) this.isDeleted = (bytes != BigInt(0));
         } else {
             if(field_number == 1) this.id = bytes.toString('utf-8');
         }

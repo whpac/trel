@@ -14,12 +14,10 @@ export default class FeedHeader extends BaseMessage {
         return false;
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint): void {
+    public setField(field_number: number, bytes: Buffer | bigint): void {
         switch(typeof bytes) {
-            case 'number':
-                if(field_number == 2) this.incrementality = bytes as EnumIncrementality;
-                break;
             case 'bigint':
+                if(field_number == 2) this.incrementality = Number(bytes) as EnumIncrementality;
                 if(field_number == 3) this.timestamp = bytes;
                 break;
             default:

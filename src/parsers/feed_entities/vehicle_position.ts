@@ -32,12 +32,12 @@ export default class VehiclePosition extends BaseMessage {
         if(field_number == 5 && typeof number === 'bigint') this.timestamp = number;
         if(field_number == 7 && number instanceof Buffer) this.stopId = number.toString('utf-8');
 
-        if(typeof number === 'number') {
+        if(typeof number === 'bigint') {
             switch(field_number) {
-                case 3: this.currentStopSequence = number; break;
-                case 4: this.currentStatus = number; break;
-                case 6: this.congestionLevel = number; break;
-                case 9: this.occupancyStatus = number; break;
+                case 3: this.currentStopSequence = Number(number); break;
+                case 4: this.currentStatus = Number(number); break;
+                case 6: this.congestionLevel = Number(number); break;
+                case 9: this.occupancyStatus = Number(number); break;
             }
         }
     }

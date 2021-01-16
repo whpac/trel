@@ -14,8 +14,8 @@ export default class VehicleDescriptor extends BaseMessage {
         return false;
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint): void {
-        if(typeof bytes === 'number' || typeof bytes === 'bigint') return;
+    public setField(field_number: number, bytes: Buffer | bigint): void {
+        if(typeof bytes === 'bigint') return;
         switch(field_number) {
             case 1: this.id = bytes.toString('utf-8'); break;
             case 2: this.label = bytes.toString('utf-8'); break;

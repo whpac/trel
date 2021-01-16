@@ -21,10 +21,10 @@ export default class StopTimeUpdate extends BaseMessage {
         return (field_number == 2 || field_number == 3);
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint): void {
-        if(field_number == 1 && typeof bytes === 'number') this.stopSequence = bytes;
+    public setField(field_number: number, bytes: Buffer | bigint): void {
+        if(field_number == 1 && typeof bytes === 'bigint') this.stopSequence = Number(bytes);
         if(field_number == 4 && bytes instanceof Buffer) this.stopId = bytes.toString('utf-8');
-        if(field_number == 5 && typeof bytes === 'number') this.scheduleRelationship = bytes;
+        if(field_number == 5 && typeof bytes === 'bigint') this.scheduleRelationship = Number(bytes);
     }
 }
 

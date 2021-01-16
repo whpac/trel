@@ -16,8 +16,8 @@ export default class Position extends BaseMessage {
         return false;
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint) {
-        if(typeof bytes === 'number' || typeof bytes === 'bigint') return;
+    public setField(field_number: number, bytes: Buffer | bigint) {
+        if(typeof bytes === 'bigint') return;
 
         switch(field_number) {
             case 1: this.latitude = this.ToFloat(bytes); break;

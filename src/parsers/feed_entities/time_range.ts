@@ -13,8 +13,8 @@ export default class TimeRange extends BaseMessage {
         return false;
     }
 
-    public setField(field_number: number, number: Buffer | number | bigint) {
-        if(typeof number === 'number' || number instanceof Buffer) return;
+    public setField(field_number: number, number: Buffer | bigint) {
+        if(number instanceof Buffer) return;
         switch(field_number) {
             case 1: this.start = number; break;
             case 2: this.end = number; break;

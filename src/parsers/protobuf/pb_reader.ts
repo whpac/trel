@@ -26,7 +26,6 @@ export default class PbReader {
                 m.setField(field_number, await this.readVarInt(s));
                 break;
             case FieldType.SCALAR_32:
-
                 m.setField(field_number, await this.readBytes(s, 4));
                 break;
             case FieldType.SCALAR_64:
@@ -37,8 +36,7 @@ export default class PbReader {
                 if(m.isEmbeddedMessage(field_number)) {
                     let embedded = m.getEmbeddedMessage(field_number);
                     await this.parseMessageInto(s, embedded, s.position + byte_count);
-                }
-                else {
+                } else {
                     m.setField(field_number, await this.readBytes(s, byte_count));
                 }
                 break;

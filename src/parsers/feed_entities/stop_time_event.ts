@@ -14,9 +14,9 @@ export default class StopTimeEvent extends BaseMessage {
         return false;
     }
 
-    public setField(field_number: number, number: Buffer | number | bigint) {
+    public setField(field_number: number, number: Buffer | bigint) {
         switch(field_number) {
-            case 1: if(typeof number === 'number') this.delay = number; break;
+            case 1: if(typeof number === 'bigint') this.delay = Number(number); break;
             case 2: if(typeof number === 'bigint') this.time = number; break;
             case 3: if(typeof number === 'number') this.uncertainty = number; break;
         }

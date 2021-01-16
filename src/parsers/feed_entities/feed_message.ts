@@ -23,6 +23,6 @@ export default class FeedMessage extends BaseMessage {
         return (field_number == 1 || field_number == 2);
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint) {
+    public setField(field_number: number, bytes: Buffer | bigint) {
     }
 }

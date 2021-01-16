@@ -17,11 +17,11 @@ export default class TripDescriptor extends BaseMessage {
         return false;
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint): void {
-        if(typeof bytes === 'number') {
+    public setField(field_number: number, bytes: Buffer | bigint): void {
+        if(typeof bytes === 'bigint') {
             switch(field_number) {
-                case 4: this.scheduleRelationship = bytes; break;
-                case 6: this.directionId = bytes; break;
+                case 4: this.scheduleRelationship = Number(bytes); break;
+                case 6: this.directionId = Number(bytes); break;
             }
         }
         if(bytes instanceof Buffer) {

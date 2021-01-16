@@ -27,8 +27,10 @@ export default class TripUpdate extends BaseMessage {
         return (field_number >= 1 && field_number <= 3);
     }
 
-    public setField(field_number: number, number: Buffer | number | bigint): void {
-        if(field_number == 4 && typeof number === 'bigint') this.timestamp = number;
-        if(field_number == 5 && typeof number === 'number') this.delay = number;
+    public setField(field_number: number, number: Buffer | bigint): void {
+        if(typeof number !== 'bigint') return;
+
+        if(field_number == 4) this.timestamp = number;
+        if(field_number == 5) this.delay = Number(number);
     }
 }

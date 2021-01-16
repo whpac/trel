@@ -18,6 +18,6 @@ export default class TranslatedString extends BaseMessage {
         return (field_number == 1);
     }
 
-    public setField(field_number: number, bytes: Buffer | number | bigint): void {
+    public setField(field_number: number, bytes: Buffer | bigint): void {
     }
 }

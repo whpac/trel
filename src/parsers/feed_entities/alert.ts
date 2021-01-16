@@ -35,12 +35,12 @@ export default class Alert extends BaseMessage {
             field_number == 10 || field_number == 11);
     }
 
-    public setField(field_number: number, number: Buffer | number | bigint): void {
-        if(typeof number !== 'number') return;
+    public setField(field_number: number, number: Buffer | bigint): void {
+        if(typeof number !== 'bigint') return;
 
         switch(field_number) {
-            case 6: this.cause = number as EnumCause; break;
-            case 7: this.effect = number as EnumEffect; break;
+            case 6: this.cause = Number(number) as EnumCause; break;
+            case 7: this.effect = Number(number) as EnumEffect; break;
         }
     }
 }
