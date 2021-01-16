@@ -1,9 +1,11 @@
-import { read } from 'fs';
+import { read, readFileSync } from 'fs';
 import Stream from './stream';
 
 export default class StreamReader implements Stream {
     protected fileDescriptor: number;
     protected _position: number;
+    protected file_lines: string[] | undefined;
+    protected current_line: number = 0;
 
     public get position(): number {
         return this._position;
@@ -49,26 +51,19 @@ export default class StreamReader implements Stream {
         });
     }
 
-    public async readLine(): Promise<string> {
-        let b;
-        let buffer = Buffer.alloc(16);
-        let current_pos = 0;
-        do {
-            b = await this.readByte();
-            if(b == 13) continue;   // '\r' = 13
+    public readLine(): string {
+        if(this.file_lines === undefined) {
+            this.file_lines = readFileSync(this.fileDescriptor, { encoding: 'utf-8' }).split('\r\n');
+            this.current_line = 0;
+        }
+        if(this.file_lines.length <= this.current_line) {
+            let e = { stream_exhausted: true };
+            throw e;
+        }
 
-            if(current_pos >= buffer.length) {
-                let new_buffer = Buffer.alloc(buffer.length * 2);
-                buffer.copy(new_buffer, 0, 0, buffer.length);
-                buffer = new_buffer;
-            }
-            buffer[current_pos] = b;
-            current_pos++;
-        } while(b != 10);   // '\n' = 10
-
-        // The last char is LF, so strip it
-        current_pos--;
-
-        return buffer.toString('utf-8', 0, current_pos);
+        let out = this.file_lines[this.current_line];
+        this.file_lines[this.current_line] = '';
+        this.current_line++;
+        return out;
     }
 }

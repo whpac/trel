@@ -20,5 +20,5 @@ export default interface Stream {
     /**
      * Reads a line of text from file
      */
-    readLine(): Promise<string>;
+    readLine(): string;
 }
