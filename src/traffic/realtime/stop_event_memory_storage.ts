@@ -7,4 +7,7 @@ export default class StopEventMemoryStorage implements StopEventStorage {
     public store(stop_event: StopEventDescriptor): void {
         this.stops.push(stop_event);
     }
+
+    public batchEnded(): void {
+    }
 }

@@ -25,4 +25,8 @@ export default class StopTimesRegistry {
             this.stopsStorage.store(new StopEventDescriptor(route_id, stop.stopId, actual_stop_time, stop.stopTime));
         } catch(e) { }
     }
+
+    public batchEnded() {
+        this.stopsStorage.batchEnded();
+    }
 }

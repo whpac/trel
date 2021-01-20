@@ -21,5 +21,7 @@ export default class DifferentialAnalyzer {
             }
             this.currentState.set(v_id, new_v);
         }
+
+        registry.batchEnded();
     }
 }
