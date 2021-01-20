@@ -17,10 +17,14 @@ export default class StopEventFileStorage implements StopEventStorage {
     public batchEnded(): void {
         let file_text = '';
         for(let stop of this.stops) {
-            file_text += `${stop.routeId},${stop.stopId},${stop.delay}\r\n`;
+            file_text += `${stop.scheduledStopTime},${stop.routeId},${stop.stopId},${stop.delay}\r\n`;
         }
 
-        appendFileSync(this.path, file_text);
-        this.stops = [];
+        try {
+            appendFileSync(this.path, file_text);
+            this.stops = [];
+        } catch(e) {
+            console.error(`Nie udało się zapisać zatrzymań do pliku: ${e}.`);
+        }
     }
 }
