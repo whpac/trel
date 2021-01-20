@@ -1,5 +1,6 @@
 import DirectoryLister from './loaders/directory_lister';
 import FileLoader from './loaders/file_loader';
+import Stream from './loaders/stream';
 import FeedMessage from './parsers/feed_entities/feed_message';
 import FeedParser from './parsers/gtfs-rt/feed_parser';
 import PbReader from './parsers/protobuf/pb_reader';
@@ -28,19 +29,14 @@ export default class Gtfs {
         this.stopTimesRegistry?.setStorage(this.stopStorage);
     }
 
-    public async readFile(path: string): Promise<void> {
+    public async readStream(data_stream: Stream): Promise<void> {
         if(this.stopTimesRegistry === undefined) throw new Error("StopSchedule hasn't been loaded.");
-
-        let loader = new FileLoader();
-        let data_stream = loader.load(path);
 
         let fm = new FeedMessage();
         await PbReader.parseMessageInto(data_stream, fm);
         let vehicles = FeedParser.parseFeed(fm);
 
         this.analyzer.analyzeNewData(vehicles, this.stopTimesRegistry);
-
-        console.log('New GTFS-RT data was read');
     }
 
     public async readDirectory(path: string): Promise<void> {
@@ -49,7 +45,10 @@ export default class Gtfs {
 
         for(let file of files) {
             if(!file.endsWith(".pb")) continue;
-            await this.readFile(file);
+
+            let loader = new FileLoader();
+            let stream = loader.load(file);
+            await this.readStream(stream);
         }
     }
 }
