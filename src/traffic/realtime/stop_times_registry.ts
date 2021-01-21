@@ -6,8 +6,6 @@ export default class StopTimesRegistry {
     protected stopSchedule: StopSchedule;
     protected stopsStorage: StopEventStorage;
 
-    private readonly TIMEZONE_OFFSET = BigInt(3600);
-
     public constructor(schedule: StopSchedule, storage: StopEventStorage) {
         this.stopSchedule = schedule;
         this.stopsStorage = storage;
@@ -18,7 +16,10 @@ export default class StopTimesRegistry {
     }
 
     public addStopTime(trip_id: string, route_id: string, stop_seq: number, stop_timestamp: bigint) {
-        let actual_stop_time = Number((stop_timestamp + this.TIMEZONE_OFFSET) % BigInt(86400));
+        // Convert stop_timestamp from UTC
+        stop_timestamp = stop_timestamp - BigInt(new Date().getTimezoneOffset() * 60);
+
+        let actual_stop_time = Number(stop_timestamp % BigInt(86400));
         try {
             var stop = this.stopSchedule.getStop(trip_id, stop_seq);
 
