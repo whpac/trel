@@ -10,7 +10,7 @@ export default class NetworkStreamReader implements Stream {
     protected dataBuffer: Buffer = Buffer.alloc(0);
     protected _position: number = 0;
     protected readQueue: ReadQueueEntry[] = [];
-    protected is_closed: boolean = false;
+    protected isClosed: boolean = false;
 
     public get position() {
         return this._position;
@@ -22,20 +22,20 @@ export default class NetworkStreamReader implements Stream {
     }
 
     public close() {
-        this.is_closed = true;
+        this.isClosed = true;
         this.dequeueJobs();
     }
 
     protected dequeueJobs() {
         while(this.readQueue.length > 0) {
             let job = this.readQueue[0];
-            if(this.dataBuffer.length - this.position < job.bytes) break;
+            if(this.dataBuffer.length - this.position < job.bytes && (isFinite(job.bytes) || !this.isClosed)) break;
 
             this._position += job.read(this.dataBuffer, this.position);
             this.readQueue.shift();
         }
 
-        if(this.is_closed) {
+        if(this.isClosed) {
             while(this.readQueue.length > 0) {
                 let job = this.readQueue.shift();
                 job?.data_exhausted();
@@ -43,14 +43,24 @@ export default class NetworkStreamReader implements Stream {
         }
     }
 
-    async read(buffer: Buffer, limit: number): Promise<number> {
+    async read(buffer: Buffer | { buffer: Buffer; }, limit: number): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             if(limit <= 0) return resolve(0);
 
             this.readQueue.push({
                 bytes: limit,
                 read: (source_buffer: Buffer, position: number) => {
-                    let copied = source_buffer.copy(buffer, 0, position, position + limit);
+                    let source_end = position + limit;
+                    if(!isFinite(limit)) source_end = source_buffer.length;
+
+                    let target;
+                    if(buffer instanceof Buffer) {
+                        target = buffer;
+                    } else {
+                        target = buffer.buffer = Buffer.alloc(source_end - position);
+                    }
+
+                    let copied = source_buffer.copy(target, 0, position, source_end);
                     resolve(copied);
                     return copied;
                 },
