@@ -1,6 +1,8 @@
+import ProgressMonitor from './diagnostics/progress_monitor';
 import DirectoryLister from './loaders/directory_lister';
 import FileLoader from './loaders/file_loader';
 import Stream from './loaders/stream';
+import ScheduleParser from './parsers/csv/schedule_parser';
 import FeedMessage from './parsers/feed_entities/feed_message';
 import FeedParser from './parsers/gtfs-rt/feed_parser';
 import PbReader from './parsers/protobuf/pb_reader';
@@ -15,12 +17,29 @@ export default class Gtfs {
     protected stopTimesRegistry: StopTimesRegistry | undefined;
     protected stopStorage: StopEventStorage;
 
+    protected _currentSchedulePath: string | undefined;
+    public get currentSchedulePath() {
+        return this._currentSchedulePath;
+    }
+
     public constructor() {
         this.analyzer = new DifferentialAnalyzer();
         this.stopStorage = new StopEventMemoryStorage();
     }
 
-    public loadStops(schedule: StopSchedule): void {
+    public async loadStops(path: string) {
+        this._currentSchedulePath = path;
+
+        let loader = new FileLoader();
+        let data_stream = loader.load(path);
+
+        let progress_monitor = new ProgressMonitor(
+            (pm) => { if(pm.value % 50000 == 0) console.log(`    Wczytano ${pm.value} wpisów`); }
+        );
+
+
+        let trips = await new ScheduleParser().parse(data_stream, true, progress_monitor);
+        let schedule = new StopSchedule(trips);
         this.stopTimesRegistry = new StopTimesRegistry(schedule, this.stopStorage);
     }
 
